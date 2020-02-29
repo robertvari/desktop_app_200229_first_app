@@ -1,6 +1,6 @@
 from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, \
     QHBoxLayout, QLabel, QListWidget, QTextEdit, QFileDialog
-import sys
+import sys, os
 
 
 class PhotoViewer(QWidget):
@@ -11,6 +11,7 @@ class PhotoViewer(QWidget):
 
         # app attributes
         self.current_dir = None
+        self.file_list = []
 
         # main layout with open folder button
         main_layout = QVBoxLayout(self)
@@ -27,9 +28,9 @@ class PhotoViewer(QWidget):
         h_layout.addLayout(file_list_layout)
 
         # File list view
-        file_list = QListWidget()
-        file_list.setMaximumWidth(200)
-        file_list_layout.addWidget(file_list)
+        self.file_list_view = QListWidget()
+        self.file_list_view.setMaximumWidth(200)
+        file_list_layout.addWidget(self.file_list_view)
 
         # photo details view
         photo_details = QTextEdit()
@@ -44,8 +45,15 @@ class PhotoViewer(QWidget):
         # connect signals
         open_bttn.clicked.connect(self.open_folder_action)
 
+    def refresh_file_list_view(self):
+        self.file_list_view.clear()
+
+        for f in self.file_list:
+            self.file_list_view.addItem(f)
+
     def collect_files(self):
-        print(self.current_dir)
+        self.file_list = [i for i in os.listdir(self.current_dir) if i.lower().endswith(".jpg")]
+        self.refresh_file_list_view()
 
     def open_folder_action(self):
         directory = QFileDialog.getExistingDirectory(self, "Select folder", "c:/")
