@@ -1,4 +1,5 @@
-from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, QHBoxLayout
+from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, \
+    QHBoxLayout, QLabel, QListWidget, QTextEdit
 import sys
 
 
@@ -6,7 +7,32 @@ class PhotoViewer(QWidget):
     def __init__(self):
         super(PhotoViewer, self).__init__()
         self.setWindowTitle("Photo Viewer")
+
+        # main layout with open folder button
         main_layout = QVBoxLayout(self)
+
+        open_bttn = QPushButton("Open Folder...")
+        main_layout.addWidget(open_bttn)
+
+        # hLayout for file list/details and Image
+        h_layout = QHBoxLayout()
+        main_layout.addLayout(h_layout)
+
+        # hLayout with file list and photo details
+        file_list_layout = QVBoxLayout()
+        h_layout.addLayout(file_list_layout)
+
+        file_list = QListWidget()
+        file_list.setMaximumWidth(200)
+        file_list_layout.addWidget(file_list)
+
+        photo_details = QTextEdit()
+        photo_details.setMaximumHeight(80)
+        photo_details.setMaximumWidth(200)
+        file_list_layout.addWidget(photo_details)
+
+        image_label = QLabel("IMAGE")
+        h_layout.addWidget(image_label)
 
 
 app = QApplication(sys.argv)
