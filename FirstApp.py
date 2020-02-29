@@ -42,6 +42,8 @@ class PhotoViewer(QWidget):
 
         # image view
         self.image_label = QLabel("IMAGE")
+        self.image_label.setMaximumSize(600, 600)
+        self.image_label.setScaledContents(True)
         h_layout.addWidget(self.image_label)
 
         # connect signals
@@ -80,6 +82,8 @@ class PhotoViewer(QWidget):
 
         exif_data = self.getExif(current_photo)
         self.photo_details.setText(exif_data)
+
+        self.image_label.setPixmap(current_photo)
 
     def open_file_action(self, item):
         os.startfile(os.path.join(self.current_dir, item.text()))
