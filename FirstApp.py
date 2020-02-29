@@ -22,15 +22,18 @@ class PhotoViewer(QWidget):
         file_list_layout = QVBoxLayout()
         h_layout.addLayout(file_list_layout)
 
+        # File list view
         file_list = QListWidget()
         file_list.setMaximumWidth(200)
         file_list_layout.addWidget(file_list)
 
+        # photo details view
         photo_details = QTextEdit()
         photo_details.setMaximumHeight(80)
         photo_details.setMaximumWidth(200)
         file_list_layout.addWidget(photo_details)
 
+        # image view
         image_label = QLabel("IMAGE")
         h_layout.addWidget(image_label)
 
