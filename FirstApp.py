@@ -16,8 +16,8 @@ class PhotoViewer(QWidget):
         # main layout with open folder button
         main_layout = QVBoxLayout(self)
 
-        open_bttn = QPushButton("Open Folder...")
-        main_layout.addWidget(open_bttn)
+        self.open_bttn = QPushButton("Open Folder...")
+        main_layout.addWidget(self.open_bttn)
 
         # hLayout for file list/details and Image
         h_layout = QHBoxLayout()
@@ -33,17 +33,29 @@ class PhotoViewer(QWidget):
         file_list_layout.addWidget(self.file_list_view)
 
         # photo details view
-        photo_details = QTextEdit()
-        photo_details.setMaximumHeight(80)
-        photo_details.setMaximumWidth(200)
-        file_list_layout.addWidget(photo_details)
+        self.photo_details = QTextEdit()
+        self.photo_details.setMaximumHeight(80)
+        self.photo_details.setMaximumWidth(200)
+        file_list_layout.addWidget(self.photo_details)
 
         # image view
-        image_label = QLabel("IMAGE")
-        h_layout.addWidget(image_label)
+        self.image_label = QLabel("IMAGE")
+        h_layout.addWidget(self.image_label)
 
         # connect signals
-        open_bttn.clicked.connect(self.open_folder_action)
+        self.open_bttn.clicked.connect(self.open_folder_action)
+
+        self.file_list_view.itemClicked.connect(self.photo_changed_action)
+        self.file_list_view.itemDoubleClicked.connect(self.open_file_action)
+
+    def photo_changed_action(self, item):
+        current_photo = os.path.join(self.current_dir, item.text())
+
+        self.photo_details.setText(current_photo)
+        self.image_label.setText(current_photo)
+
+    def open_file_action(self, item):
+        os.startfile(os.path.join(self.current_dir, item.text()))
 
     def refresh_file_list_view(self):
         self.file_list_view.clear()
@@ -59,7 +71,10 @@ class PhotoViewer(QWidget):
         directory = QFileDialog.getExistingDirectory(self, "Select folder", "c:/")
 
         if len(directory):
-            self.current_dir = directory
+            self.current_dir = directory.replace("/", "\\")
+
+            self.open_bttn.setText(self.current_dir)
+            self.setWindowTitle(f"Photo Viewer: {self.current_dir}")
             self.collect_files()
 
 
