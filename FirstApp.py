@@ -1,6 +1,7 @@
 from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, \
     QHBoxLayout, QLabel, QListWidget, QTextEdit, QFileDialog
 import sys, os
+from PIL import Image, ExifTags
 
 
 class PhotoViewer(QWidget):
@@ -34,6 +35,7 @@ class PhotoViewer(QWidget):
 
         # photo details view
         self.photo_details = QTextEdit()
+        self.photo_details.setReadOnly(True)
         self.photo_details.setMaximumHeight(80)
         self.photo_details.setMaximumWidth(200)
         file_list_layout.addWidget(self.photo_details)
@@ -48,11 +50,36 @@ class PhotoViewer(QWidget):
         self.file_list_view.itemClicked.connect(self.photo_changed_action)
         self.file_list_view.itemDoubleClicked.connect(self.open_file_action)
 
+    def getExif(self, filePath):
+        exif_string = ""
+
+        exif_string += f"File: {filePath}\n"
+
+        img = Image.open(filePath)
+        exif = img._getexif()
+        if exif:
+            for k, v in exif.items():
+                if k in ExifTags.TAGS:
+                    exifLabel = ExifTags.TAGS[k]
+
+                    if exifLabel == "DateTimeOriginal":
+                        exif_string += f"Date: {v}\n"
+
+                    if exifLabel == "Model":
+                        exif_string += f"Camera: {v}\n"
+
+                    if exifLabel == "ISOSpeedRatings":
+                        exif_string += f"ISO: {v}\n"
+
+
+
+        return exif_string
+
     def photo_changed_action(self, item):
         current_photo = os.path.join(self.current_dir, item.text())
 
-        self.photo_details.setText(current_photo)
-        self.image_label.setText(current_photo)
+        exif_data = self.getExif(current_photo)
+        self.photo_details.setText(exif_data)
 
     def open_file_action(self, item):
         os.startfile(os.path.join(self.current_dir, item.text()))
