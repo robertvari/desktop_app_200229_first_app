@@ -1,0 +1,35 @@
+QWidget{
+    background-color: #2b2b2b;
+    color: #bababa;
+}
+
+QListWidget, QTextEdit{
+    background-color: #313335;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 5px;
+}
+
+QPushButton{
+    background-color: #313335;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 5px;
+    font-size: 18px;
+    padding: 10px;
+}
+
+QPushButton:hover{
+    background-color: #5c5e60;
+}
+
+QScrollBar:vertical {
+    width: 10px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #2b2b2b;
+    border: none;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #545454;
+}

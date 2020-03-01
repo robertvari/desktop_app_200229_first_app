@@ -48,11 +48,18 @@ class PhotoViewer(QWidget):
         self.image_viewer = ImageViewer()
         h_layout.addWidget(self.image_viewer)
 
+        self.apply_style()
+
         # connect signals
         self.open_bttn.clicked.connect(self.open_folder_action)
 
         self.file_list_view.itemClicked.connect(self.photo_changed_action)
         self.file_list_view.itemDoubleClicked.connect(self.open_file_action)
+
+    def apply_style(self):
+        with open("style.css") as f:
+            style = f.read()
+            self.setStyleSheet(style)
 
     def getExif(self, filePath):
         exif_string = ""
