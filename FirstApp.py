@@ -1,5 +1,9 @@
 from PySide2.QtWidgets import QWidget, QApplication, QPushButton, QVBoxLayout, \
-    QHBoxLayout, QLabel, QListWidget, QTextEdit, QFileDialog
+    QHBoxLayout, QListWidget, QTextEdit, QFileDialog
+
+from PySide2.QtGui import QPainter, QPen, QBrush, QColor, QPixmap
+from PySide2.QtCore import Qt, QSize, QRect
+
 import sys, os
 from PIL import Image, ExifTags
 
@@ -41,10 +45,8 @@ class PhotoViewer(QWidget):
         file_list_layout.addWidget(self.photo_details)
 
         # image view
-        self.image_label = QLabel("IMAGE")
-        self.image_label.setMaximumSize(600, 600)
-        self.image_label.setScaledContents(True)
-        h_layout.addWidget(self.image_label)
+        self.image_viewer = ImageViewer()
+        h_layout.addWidget(self.image_viewer)
 
         # connect signals
         self.open_bttn.clicked.connect(self.open_folder_action)
@@ -83,7 +85,7 @@ class PhotoViewer(QWidget):
         exif_data = self.getExif(current_photo)
         self.photo_details.setText(exif_data)
 
-        self.image_label.setPixmap(current_photo)
+        self.image_viewer.set_pixmap(current_photo)
 
     def open_file_action(self, item):
         os.startfile(os.path.join(self.current_dir, item.text()))
@@ -108,6 +110,39 @@ class PhotoViewer(QWidget):
             self.setWindowTitle(f"Photo Viewer: {self.current_dir}")
             self.collect_files()
 
+
+class ImageViewer(QWidget):
+    def __init__(self):
+        super(ImageViewer, self).__init__()
+        self.painter = QPainter()
+        self.my_pen = QPen(QColor("red"))
+        self.my_pen.setWidth(5)
+
+        self.my_brush = QBrush(QColor("#123456"))
+
+        self.photo = QPixmap()
+        self.photo_rect = QRect()
+
+    def set_pixmap(self, image_path):
+        self.photo.load(image_path)
+        self.repaint()
+
+    def paintEvent(self, event):
+        self.painter.begin(self)
+        self.draw()
+        self.painter.end()
+
+    def draw(self):
+        rect = self.rect()
+
+        self.painter.setPen(self.my_pen)
+        self.painter.setBrush(self.my_brush)
+
+        photo = self.photo.scaled(QSize(rect.width(), rect.height()), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.photo_rect.setRect(rect.x(), rect.y(), photo.width(), photo.height())
+        self.photo_rect.moveCenter(rect.center())
+
+        self.painter.drawPixmap(self.photo_rect, photo)
 
 app = QApplication(sys.argv)
 win = PhotoViewer()
